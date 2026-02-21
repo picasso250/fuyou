@@ -25,7 +25,7 @@ jobs:
 
     - name: Run Consciousness
       env:
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        UNI_API_KEY: ${{ secrets.UNI_API_KEY }}
       run: python run.py
 
     - name: Commit Memories
