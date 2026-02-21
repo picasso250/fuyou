@@ -145,7 +145,7 @@ import re
 
 def parse_blocks(text):
     blocks = {}
-    pattern = r"===\s*(.+?)\s*===\n(.*?)\n===\s*end\s*==="
+    pattern = r"===\s*(.+?)\s*===\n(.*?)\n?===\s*end\s*==="
     matches = re.findall(pattern, text, re.DOTALL)
     for name, content in matches:
         blocks[name.strip()] = content.strip()
