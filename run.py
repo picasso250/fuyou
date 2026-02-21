@@ -10,7 +10,7 @@ from google.genai import types
 
 load_dotenv()
 
-API_KEY = os.environ.get("GEMINI_API_KEY")
+API_KEY = os.environ.get("UNI_API_KEY")
 MODEL_NAME = "gemini-3.1-pro-preview"
 
 INPUT_PRICE_PER_M = 2.00
