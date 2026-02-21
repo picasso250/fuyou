@@ -12,6 +12,9 @@ load_dotenv()
 API_KEY = os.environ.get("GEMINI_API_KEY")
 MODEL_NAME = "gemini-3-pro-preview"
 
+INPUT_PRICE_PER_M = 2.00
+OUTPUT_PRICE_PER_M = 12.00
+
 client = genai.Client(
     api_key=API_KEY,
     http_options=types.HttpOptions(base_url="https://api.uniapi.io/gemini"),
@@ -102,18 +105,27 @@ try:
 
     # Get token usage
     usage_metadata = response.usage_metadata
-    if usage_metadata:
+    if (
+        usage_metadata
+        and usage_metadata.prompt_token_count
+        and usage_metadata.total_token_count
+    ):
         input_tokens = usage_metadata.prompt_token_count
-        output_tokens = usage_metadata.candidates_token_count
         total_tokens = usage_metadata.total_token_count
+        output_tokens = total_tokens - input_tokens
 
-        # Log token usage
-        log_entry = f"{now} | Input: {input_tokens} | Output: {output_tokens} | Total: {total_tokens}\n"
+        # Calculate cost (output includes thinking tokens)
+        cost = (input_tokens / 1_000_000) * INPUT_PRICE_PER_M + (
+            output_tokens / 1_000_000
+        ) * OUTPUT_PRICE_PER_M
+
+        # Log token usage with cost
+        log_entry = f"{now} | Input: {input_tokens} | Output: {output_tokens} | Total: {total_tokens} | Cost: ${cost:.4f}\n"
         os.makedirs("memory", exist_ok=True)
         with open("memory/token_usage.log", "a", encoding="utf-8") as f:
             f.write(log_entry)
         print(
-            f"Token usage - Input: {input_tokens}, Output: {output_tokens}, Total: {total_tokens}"
+            f"Token usage - Input: {input_tokens}, Output: {output_tokens}, Total: {total_tokens}, Cost: ${cost:.4f}"
         )
     else:
         input_tokens = output_tokens = total_tokens = 0

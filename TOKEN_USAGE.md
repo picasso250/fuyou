@@ -8,12 +8,6 @@
 
 当调用 `client.models.generate_content()` 后，响应对象包含 `usage_metadata` 属性：
 
-```python
-response = client.models.generate_content(model="gemini-3-pro-preview", contents=prompt)
-print(response.usage_metadata)
-# 输出示例: prompt_token_count: 11, candidates_token_count: 73, total_token_count: 84
-```
-
 ### 字段说明
 
 | 字段 | 属性名 | 说明 |
@@ -23,19 +17,19 @@ print(response.usage_metadata)
 | Thinking Tokens | `thoughts_token_count` | 思考token数量（如果模型有思考能力） |
 | Total Tokens | `total_token_count` | 总token数量 = input + output + thoughts |
 
+**重要：Output 包含 thinking tokens**（官方文档明确）
+
 ## 运行日志格式
 
 每次运行后，会在 `memory/token_usage.log` 中追加一行：
 
 ```
-2026-02-21 10:30:00 UTC | Input: 1500 | Output: 300 | Total: 1800
+2026-02-21 10:30:00 UTC | Input: 1500 | Output: 300 | Total: 1800 | Cost: $0.0040
 ```
 
-## 计费说明
-
-- 100 tokens ≈ 60-80 个英文单词
-- 1 token ≈ 4 个字符
-- 费用按 input + output tokens 计算
+### 计费公式
+- `Output = Total - Input`（因为 total = input + output）
+- `Cost = (Input/1M * $2.00) + (Output/1M * $12.00)`
 
 ## 定价 (每1M tokens, USD)
 
@@ -45,13 +39,3 @@ print(response.usage_metadata)
 |------|-----------|
 | Input | $2.00 |
 | Output | $12.00 |
-
-### 其他模型参考
-
-| 模型 | Input | Output |
-|------|-------|--------|
-| Gemini 2.5 Flash-Lite | $0.10 | $0.40 |
-| Gemini 2.5 Flash | $0.30 | $2.50 |
-| Gemini 2.5 Pro | $1.25 | $10.00 |
-| Gemini 3 Pro Preview | $2.00 | $12.00 |
-| Gemini 3 Flash Preview | $0.50 | $3.00 |
