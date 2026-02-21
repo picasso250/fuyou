@@ -21,7 +21,7 @@ jobs:
         python-version: '3.9'
 
     - name: Install Dependencies
-      run: pip install google-generativeai
+      run: pip install google-genai python-dotenv
 
     - name: Run Consciousness
       env:
