@@ -63,7 +63,7 @@ prompt = f"""
 
 【你的能力】
 你可以输出多个区块，区块格式为：
-=== block_name(or with description) ===
+=== block_name ===
 block_content
 === end ===
 
