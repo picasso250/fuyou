@@ -103,6 +103,13 @@ try:
     response_text = response.text if response.text else ""
     blocks = parse_blocks(response_text)
 
+    # 记录 AI 原始回复
+    os.makedirs("memory", exist_ok=True)
+    with open(
+        f"memory/ai_response_{now.replace(':', '-').replace(' ', '_')}.log", "w"
+    ) as f:
+        f.write(response_text)
+
     # --- 3. 执行意志 (Execute Will) ---
     print(f"AI Thoughts: {blocks.get('thoughts', '')}")
 
@@ -110,16 +117,6 @@ try:
     os.makedirs("memory", exist_ok=True)
     with open("memory/last_thoughts.md", "w") as f:
         f.write(blocks.get("thoughts", ""))
-
-    # 写文件
-    for name, content in blocks.items():
-        if name.startswith("FILE: "):
-            fname = name[6:].strip()  # 去掉 "FILE: " 前缀
-            if fname.startswith("memory/"):
-                os.makedirs("memory", exist_ok=True)
-                with open(fname, "w") as f:
-                    f.write(content)
-                print(f"Wrote to {fname}")
 
     # 执行 Bash (沙盒内)
     if "bash_script" in blocks:
