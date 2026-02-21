@@ -10,7 +10,7 @@ from google.genai import types
 load_dotenv()
 
 API_KEY = os.environ.get("GEMINI_API_KEY")
-MODEL_NAME = "gemini-3-pro-preview"
+MODEL_NAME = "gemini-3.1-pro-preview"
 
 INPUT_PRICE_PER_M = 2.00
 OUTPUT_PRICE_PER_M = 12.00
@@ -152,10 +152,16 @@ def parse_blocks(text):
 
 
 try:
-    response = client.models.generate_content(model=MODEL_NAME, contents=prompt , config=types.GenerateContentConfig(
-            thinking_config=types.ThinkingConfig(thinking_level="MEDIUM"),
+    response = client.models.generate_content(
+        model=MODEL_NAME,
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            thinking_config=types.ThinkingConfig(
+                thinking_level="MEDIUM",
+            ),
             tools=[types.Tool(googleSearch=types.GoogleSearch())],
-        ),)
+        ),
+    )
 
     # Get token usage
     usage_metadata = response.usage_metadata
