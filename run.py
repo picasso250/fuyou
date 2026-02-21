@@ -3,6 +3,7 @@ import glob
 import datetime
 import io
 import sys
+from datetime import UTC
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
@@ -65,7 +66,7 @@ if os.path.exists("memory/last_thoughts.md"):
     with open("memory/last_thoughts.md", "r", encoding="utf-8") as f:
         last_thoughts = f.read()
 
-now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+now = datetime.datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
 
 # 计算累计成本 (在 API 调用前)
 total_cost = 0.0
