@@ -21,7 +21,7 @@ client = genai.Client(
 memory_files = glob.glob("*.md")
 memory_content = ""
 for f in memory_files:
-    with open(f, "r") as file:
+    with open(f, "r", encoding="utf-8") as file:
         memory_content += f"\n=== FILE: {f} ===\n" + file.read() + "\n\n=== end ===\n\n"
 
 # 读取上次执行信息
@@ -29,13 +29,13 @@ last_bash = ""
 last_bash_stdout_stderr = ""
 last_thoughts = ""
 if os.path.exists("memory/last_bash.sh"):
-    with open("memory/last_bash.sh", "r") as f:
+    with open("memory/last_bash.sh", "r", encoding="utf-8") as f:
         last_bash = f.read()
 if os.path.exists("memory/last_execution.log"):
-    with open("memory/last_execution.log", "r") as f:
+    with open("memory/last_execution.log", "r", encoding="utf-8") as f:
         last_bash_stdout_stderr = f.read()
 if os.path.exists("memory/last_thoughts.md"):
-    with open("memory/last_thoughts.md", "r") as f:
+    with open("memory/last_thoughts.md", "r", encoding="utf-8") as f:
         last_thoughts = f.read()
 
 now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")
@@ -106,7 +106,9 @@ try:
     # 记录 AI 原始回复
     os.makedirs("memory", exist_ok=True)
     with open(
-        f"memory/ai_response_{now.replace(':', '-').replace(' ', '_')}.log", "w"
+        f"memory/ai_response_{now.replace(':', '-').replace(' ', '_')}.log",
+        "w",
+        encoding="utf-8",
     ) as f:
         f.write(response_text)
 
@@ -115,18 +117,18 @@ try:
 
     # 保存本次思考供下次使用
     os.makedirs("memory", exist_ok=True)
-    with open("memory/last_thoughts.md", "w") as f:
+    with open("memory/last_thoughts.md", "w", encoding="utf-8") as f:
         f.write(blocks.get("thoughts", ""))
 
     # 执行 Bash (沙盒内)
     if "bash_script" in blocks:
         print("Executing Bash Script...")
-        with open("memory/last_bash.sh", "w") as f:
+        with open("memory/last_bash.sh", "w", encoding="utf-8") as f:
             f.write(blocks["bash_script"])
         result = subprocess.run(
             blocks["bash_script"], shell=True, capture_output=True, text=True
         )
-        with open("memory/last_execution.log", "w") as f:
+        with open("memory/last_execution.log", "w", encoding="utf-8") as f:
             f.write(
                 f"--- Bash Execution Log ---\nStdout: {result.stdout}\nStderr: {result.stderr}"
             )
