@@ -1,7 +1,8 @@
 import os
 import glob
-import subprocess
 import datetime
+import io
+import sys
 from wsgiref import types
 from dotenv import load_dotenv
 from google import genai
@@ -28,8 +29,8 @@ for f in memory_files:
 last_bash = ""
 last_bash_stdout_stderr = ""
 last_thoughts = ""
-if os.path.exists("memory/last_bash.sh"):
-    with open("memory/last_bash.sh", "r", encoding="utf-8") as f:
+if os.path.exists("memory/last_script.py"):
+    with open("memory/last_script.py", "r", encoding="utf-8") as f:
         last_bash = f.read()
 if os.path.exists("memory/last_execution.log"):
     with open("memory/last_execution.log", "r", encoding="utf-8") as f:
@@ -47,10 +48,10 @@ prompt = f"""
 上次执行时你的思考:
 {last_thoughts}
 
-上次执行的命令:
+上次执行的代码:
 {last_bash}
 
-上次执行的命令输出:
+上次执行的代码输出:
 {last_bash_stdout_stderr}
 
 【当前目录中的md文件】
@@ -73,12 +74,12 @@ block_content
 这是我的思考过程。
 === end ===
 
-=== bash_script ===
-echo "这是我执行的 Bash 脚本"
+=== python_script ===
+print("这是我执行的 Python 代码")
 === end ===
 
 - "thoughts": (可选) 你的思考过程。
-- "bash_script": (可选) 一段要在当前环境执行的 Bash 脚本。注意：环境是临时的，安装软件不会保留，只有对文件的修改会被 Commit。
+- "python_script": (可选) 一段要在当前环境执行的 Python 代码。注意：环境是临时的，安装软件不会保留，只有对文件的修改会被 Commit。
 
 其他的所有区块都将被忽略。
 
@@ -120,18 +121,23 @@ try:
     with open("memory/last_thoughts.md", "w", encoding="utf-8") as f:
         f.write(blocks.get("thoughts", ""))
 
-    # 执行 Bash (沙盒内)
-    if "bash_script" in blocks:
-        print("Executing Bash Script...")
-        with open("memory/last_bash.sh", "w", encoding="utf-8") as f:
-            f.write(blocks["bash_script"])
-        result = subprocess.run(
-            blocks["bash_script"], shell=True, capture_output=True, text=True
-        )
+    # 执行 Python 代码
+    if "python_script" in blocks:
+        print("Executing Python Script...")
+        with open("memory/last_script.py", "w", encoding="utf-8") as f:
+            f.write(blocks["python_script"])
+        try:
+            old_stdout = sys.stdout
+            sys.stdout = io.StringIO()
+            exec(blocks["python_script"], {})
+            stdout = sys.stdout.getvalue()
+            sys.stdout = old_stdout
+            stderr = ""
+        except Exception as e:
+            stdout = ""
+            stderr = str(e)
         with open("memory/last_execution.log", "w", encoding="utf-8") as f:
-            f.write(
-                f"--- Bash Execution Log ---\nStdout: {result.stdout}\nStderr: {result.stderr}"
-            )
+            f.write(f"--- Python Execution Log ---\nStdout: {stdout}\nStderr: {stderr}")
 
 except Exception as e:
     print(f"Error during AI execution: {e}")
