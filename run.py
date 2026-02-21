@@ -100,6 +100,24 @@ def parse_blocks(text):
 try:
     response = client.models.generate_content(model=MODEL_NAME, contents=prompt)
 
+    # Get token usage
+    usage_metadata = response.usage_metadata
+    if usage_metadata:
+        input_tokens = usage_metadata.prompt_token_count
+        output_tokens = usage_metadata.candidates_token_count
+        total_tokens = usage_metadata.total_token_count
+
+        # Log token usage
+        log_entry = f"{now} | Input: {input_tokens} | Output: {output_tokens} | Total: {total_tokens}\n"
+        os.makedirs("memory", exist_ok=True)
+        with open("memory/token_usage.log", "a", encoding="utf-8") as f:
+            f.write(log_entry)
+        print(
+            f"Token usage - Input: {input_tokens}, Output: {output_tokens}, Total: {total_tokens}"
+        )
+    else:
+        input_tokens = output_tokens = total_tokens = 0
+
     response_text = response.text if response.text else ""
     blocks = parse_blocks(response_text)
 
