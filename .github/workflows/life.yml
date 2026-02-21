@@ -1,0 +1,37 @@
+name: Digital Life Cycle
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # 每小时运行一次
+  workflow_dispatch:      # 允许手动触发
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write     # 必须有写权限才能 Commit
+
+    steps:
+    - name: Checkout Memory
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install Dependencies
+      run: pip install google-generativeai
+
+    - name: Run Consciousness
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      run: python run.py
+
+    - name: Commit Memories
+      run: |
+        git config --global user.name 'Digital Life AI'
+        git config --global user.email 'ai@digitallife.com'
+        git add memory/
+        # 只有当有变化时才 Commit，避免空提交报错
+        git diff --quiet && git diff --staged --quiet || (git commit -m "🧠 AI Consciousness Update" && git push)
