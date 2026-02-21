@@ -24,7 +24,7 @@
 每次运行后，会在 `memory/token_usage.log` 中追加一行：
 
 ```
-2026-02-21 10:30:00 UTC | Input: 1500 | Output: 300 | Total: 1800 | Cost: $0.0040
+2026-02-21 15:24:25 UTC | Input: 2710 | Output: 4285 | Total: 6995 | Cost: $0.0568
 ```
 
 ### 计费公式
