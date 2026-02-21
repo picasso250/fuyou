@@ -2,12 +2,18 @@ import os
 import glob
 import subprocess
 import datetime
+from wsgiref import types
+from dotenv import load_dotenv
 from google import genai
+
+load_dotenv()
 
 API_KEY = os.environ.get("GEMINI_API_KEY")
 MODEL_NAME = "gemini-3-pro-preview"
 
-client = genai.Client(api_key=API_KEY)
+client = genai.Client(
+    api_key=os.environ.get("GEMINI_API_KEY"),
+    http_options=types.HttpOptions(base_url="https://api.uniapi.io/gemini"),)
 
 # --- 1. 读取记忆 (Read Memory) ---
 memory_files = glob.glob("*.md")
