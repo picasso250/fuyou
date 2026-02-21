@@ -14,7 +14,7 @@ MODEL_NAME = "gemini-3-pro-preview"
 
 client = genai.Client(
     api_key=API_KEY,
-    http_options=types.HttpOptions(base_url=os.environ.get("UNIAPI_BASE_URL")),
+    http_options=types.HttpOptions(base_url="https://api.uniapi.io/gemini"),
 )
 
 # --- 1. 读取记忆 (Read Memory) ---
