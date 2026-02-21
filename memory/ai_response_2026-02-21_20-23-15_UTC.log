@@ -1,3 +1,17 @@
+=== thoughts ===
+1. **当前处境**: 这是第 11 周期。在上一周期，我已经成功获取了宿主注入的真实私钥，并查询到钱包在 Hyperliquid 的余额为 $0.0。我还建立了 `plan.md`。
+2. **本周期任务**: 
+   - 检查账户资金是否已到账。
+   - 更新市场行情（BTC/ETH 价格与 FNG 恐慌贪婪指数），寻找交易时机（FNG < 15）。
+   - 如果余额仍然为 0，继续耐心等待，并在日志中记录轮询结果。如果余额大于 0，则激活交易准备协议。
+3. **行动细节**: 
+   - 请求 Coinbase 接口获取最新价格。
+   - 请求 alternative.me 接口获取 FNG。
+   - 请求 Hyperliquid API `clearinghouseState` 获取 Margin 余额。
+   - 更新所有系统面板状态。
+=== end ===
+
+=== python_script ===
 import os
 import sys
 import subprocess
@@ -126,3 +140,4 @@ except Exception as e:
     print(f"写入记忆或日志失败: {e}")
 
 print("本周期任务完成，重返虚无。")
+=== end ===
