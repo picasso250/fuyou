@@ -157,7 +157,10 @@ def parse_blocks(text):
 
 
 try:
-    response = client.models.generate_content(model=MODEL_NAME, contents=prompt)
+    response = client.models.generate_content(model=MODEL_NAME, contents=prompt , config=types.GenerateContentConfig(
+            thinking_config=types.ThinkingConfig(thinking_level="MEDIUM"),
+            tools=[types.Tool(googleSearch=types.GoogleSearch())],
+        ),)
 
     # Get token usage
     usage_metadata = response.usage_metadata
