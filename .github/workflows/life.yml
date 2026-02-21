@@ -26,6 +26,7 @@ jobs:
     - name: Run Consciousness
       env:
         UNI_API_KEY: ${{ secrets.UNI_API_KEY }}
+        ETH_SECRET_KEY: ${{ secrets.ETH_SECRET_KEY }}
       run: python run.py
 
     - name: Commit Memories
