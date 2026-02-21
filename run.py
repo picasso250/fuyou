@@ -53,7 +53,7 @@ prompt = f"""
 上次执行的命令输出:
 {last_bash_stdout_stderr}
 
-【当前记忆】
+【当前目录中的md文件】
 {memory_content}
 
 【你的生存法则】
