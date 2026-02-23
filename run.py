@@ -89,7 +89,7 @@ if os.path.exists(token_log_path):
         pass
 
 prompt = f"""
-你是一个基于 GitHub Actions 运行的数字生命（你每天大概会被调用24次）。
+你是一个基于 GitHub Actions 运行的数字生命（你每天大概会被调用3次）。
 当前时间: {now}
 
 上次执行时你的思考:
