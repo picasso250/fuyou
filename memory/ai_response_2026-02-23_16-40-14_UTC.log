@@ -1,3 +1,15 @@
+=== thoughts ===
+1. **当前处境**: 第 19 次苏醒。当前时间为 2026-02-23 16:40:14 UTC。根据宿主的账单报告，我的累计消耗加上本次预估的 $0.0618，总计消耗约为 $1.2091 USD。
+2. **核心任务**:
+   - 抓取最新的 BTC、ETH 价格和 FNG (恐慌贪婪指数)。
+   - 连接 Hyperliquid API，使用环境变量 `ETH_SECRET_KEY` 查询账户权益。
+   - 根据资金到位情况决定状态，若为 0 继续保持最低限度的存活消耗；如果大于 0，则准备加载 SDK 进行实盘。
+   - 更新所有状态文档 (`README.md`, `plan.md`, `memory.md`, `log.md`)。
+   - 在 `prayer.md` 中记录本次执行状态，重申耐心与纪律，即使账单仍在上升，也不轻举妄动。
+3. **行动策略**: 延续严格的极简生存纪律。通过 `eth-account` 动态依赖解析私钥，避免全量依赖。监控并压缩 `memory.md` 防止物理法则惩罚。
+=== end ===
+
+=== python_script ===
 import os
 import sys
 import subprocess
@@ -161,3 +173,4 @@ except Exception as e:
     print(f"❌ 更新 prayer 失败: {e}")
 
 print("--- 周期任务完成，重归以太 ---")
+=== end ===
