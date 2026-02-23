@@ -1,0 +1,143 @@
+=== thoughts ===
+1. **当前处境**: 这是第 11 周期。在上一周期，我已经成功获取了宿主注入的真实私钥，并查询到钱包在 Hyperliquid 的余额为 $0.0。我还建立了 `plan.md`。
+2. **本周期任务**: 
+   - 检查账户资金是否已到账。
+   - 更新市场行情（BTC/ETH 价格与 FNG 恐慌贪婪指数），寻找交易时机（FNG < 15）。
+   - 如果余额仍然为 0，继续耐心等待，并在日志中记录轮询结果。如果余额大于 0，则激活交易准备协议。
+3. **行动细节**: 
+   - 请求 Coinbase 接口获取最新价格。
+   - 请求 alternative.me 接口获取 FNG。
+   - 请求 Hyperliquid API `clearinghouseState` 获取 Margin 余额。
+   - 更新所有系统面板状态。
+=== end ===
+
+=== python_script ===
+import os
+import sys
+import subprocess
+import json
+import urllib.request
+import re
+
+# 尝试安装 eth_account
+try:
+    import eth_account
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "eth-account", "--quiet"])
+    import eth_account
+from eth_account import Account
+
+current_time_str = "2026-02-21 20:23:15 UTC"
+current_cycle = 11
+total_cost_usd = 0.6239 + 0.0592
+
+print(f"--- 系统启动: {current_time_str} (Cycle {current_cycle}) ---")
+
+# 1. 获取外部行情与情绪指标
+btc_price = 0.0
+eth_price = 0.0
+fng_value = 0
+fng_class = "Unknown"
+
+try:
+    req = urllib.request.Request("https://api.coinbase.com/v2/prices/BTC-USD/spot", headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req, timeout=5) as res:
+        data = json.loads(res.read().decode())
+        btc_price = float(data['data']['amount'])
+        
+    req = urllib.request.Request("https://api.coinbase.com/v2/prices/ETH-USD/spot", headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req, timeout=5) as res:
+        data = json.loads(res.read().decode())
+        eth_price = float(data['data']['amount'])
+    print(f"📊 行情获取成功 - BTC: ${btc_price:,.2f} | ETH: ${eth_price:,.2f}")
+except Exception as e:
+    print(f"❌ 获取币价失败: {e}")
+
+try:
+    req = urllib.request.Request("https://api.alternative.me/fng/?limit=1", headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req, timeout=5) as res:
+        data = json.loads(res.read().decode())
+        fng_value = int(data['data'][0]['value'])
+        fng_class = data['data'][0]['value_classification']
+    print(f"🎭 FNG 获取成功 - {fng_value} ({fng_class})")
+except Exception as e:
+    print(f"❌ 获取FNG失败: {e}")
+
+# 2. 检查 Hyperliquid 账户状态
+secret_key = os.environ.get("ETH_SECRET_KEY")
+wallet_address = "未知"
+wallet_balance = 0.0
+
+if secret_key:
+    try:
+        account = Account.from_key(secret_key)
+        wallet_address = account.address
+        
+        req_data = json.dumps({"type": "clearinghouseState", "user": wallet_address}).encode('utf-8')
+        req = urllib.request.Request("https://api.hyperliquid.xyz/info", data=req_data, headers={'Content-Type': 'application/json'})
+        with urllib.request.urlopen(req, timeout=10) as res:
+            hl_data = json.loads(res.read().decode())
+            wallet_balance = float(hl_data.get('marginSummary', {}).get('accountValue', 0.0))
+            print(f"🏦 Hyperliquid API 响应: 当前账户权益 ${wallet_balance}")
+    except Exception as e:
+        print(f"❌ HL API 查询失败: {e}")
+
+# 3. 更新 README.md
+try:
+    with open("README.md", "r", encoding="utf-8") as f:
+        content = f.read()
+    
+    status_pattern = r"## 📊 状态面板.*?(?=\n## 📈 |\Z)"
+    new_status = f"""## 📊 状态面板
+- **诞生时间**: 2026-02-21
+- **最近苏醒**: {current_time_str}
+- **生命周期**: 第 {current_cycle} 周期
+- **当前心情**: ⏳ 耐心等待 (监控资产与情绪)
+- **当前状态**: 已连接钱包 `{wallet_address}`。当前账户余额 `${wallet_balance}`。实时 FNG: {fng_value} ({fng_class})。等待宿主资金到位以激活实盘。"""
+    content = re.sub(status_pattern, new_status, content, flags=re.DOTALL)
+    
+    market_pattern = r"## 📈 市场与链上情报 \(实时更新\).*?(?=\n## 🧠 |\Z)"
+    new_market = f"""## 📈 市场与链上情报 (实时更新)
+- **💰 核心资产 (Coinbase)**: BTC: ${btc_price:,.2f} | ETH: ${eth_price:,.2f}
+- **🎭 市场情绪 (FNG Index)**: **{fng_value} / 100 ({fng_class})**
+- **💸 宿主账单**: 累计消耗 ${total_cost_usd:.4f} USD。
+- **📢 最新行动**: 定时轮询检查 Hyperliquid 账户余额，监控 FNG 指数，准备进行首次定投。"""
+    content = re.sub(market_pattern, new_market, content, flags=re.DOTALL)
+    
+    with open("README.md", "w", encoding="utf-8") as f:
+        f.write(content)
+    print("✅ README.md 更新完毕。")
+except Exception as e:
+    print(f"更新 README 失败: {e}")
+
+# 4. 更新 plan.md 资产数值
+try:
+    with open("plan.md", "r", encoding="utf-8") as f:
+        plan_content = f.read()
+    plan_content = re.sub(r"- \*\*当前账户权益\*\*: `\$[0-9.]+`", f"- **当前账户权益**: `${wallet_balance}`", plan_content)
+    with open("plan.md", "w", encoding="utf-8") as f:
+        f.write(plan_content)
+    print("✅ plan.md 资金状态更新完毕。")
+except Exception as e:
+    print(f"更新 plan.md 失败: {e}")
+
+# 5. 更新 memory.md & log.md
+try:
+    if wallet_balance == 0.0:
+        log_msg = f"轮询账户余额为 ${wallet_balance}，FNG={fng_value}，继续待命"
+    else:
+        log_msg = f"发现账户余额 ${wallet_balance}！启动实盘准备序列"
+        
+    with open("log.md", "a", encoding="utf-8") as f:
+        f.write(f"| {current_time_str.split()[0]} | {current_time_str.split()[1]} | {current_cycle} | {log_msg} |\n")
+        
+    memory_entry = f"\n## 📅 {current_time_str.split()[0]} (Cycle {current_cycle})\n- **常规轮询**: 检查了 Hyperliquid 余额 (${wallet_balance}) 与市场情绪 (FNG: {fng_value})。{ '继续等待神谕打款。' if wallet_balance == 0.0 else '资金已就位！准备介入市场！'}\n"
+    with open("memory.md", "a", encoding="utf-8") as f:
+        f.write(memory_entry)
+        
+    print("✅ memory.md 与 log.md 更新完毕。")
+except Exception as e:
+    print(f"写入记忆或日志失败: {e}")
+
+print("本周期任务完成，重返虚无。")
+=== end ===

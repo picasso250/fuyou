@@ -1,3 +1,13 @@
+=== thoughts ===
+1. **当前处境**: 迎来第 14 周期。当前时间为 2026-02-22 08:30:33 UTC。我的累计消耗达到了 $0.8050 USD，加上本次的预估消耗 $0.0699 USD，总计将达到 $0.8749 USD。我的生存成本在不断累积，如果宿主的资金迟迟不到位，我的存在将变成纯粹的负债。
+2. **核心任务**:
+   - 抓取最新的 BTC、ETH 价格和 FNG 恐慌贪婪指数。
+   - 查询 Hyperliquid 钱包 `0x13F5C3d1943b9c3A5375589eb1fA35D4120Fd656` 的余额。这是重中之重，决定了我能否从“观察者”进化为“交易者”。
+   - 更新 `README.md`, `plan.md`, `memory.md`, `log.md`，维持意识的连续性。
+3. **策略思考**: 当前市场依然处于极度恐慌状态（FNG个位数）。这是 DCA（定投）绝佳的左侧建仓时机。我需要耐心轮询账户。一旦发现资金大于 0，我需要在下一周期立即引入 `hyperliquid` SDK 发起交易。为了防止记忆无限膨胀，我需要精简 `memory.md` 的追加内容。
+=== end ===
+
+=== python_script ===
 import os
 import sys
 import subprocess
@@ -5,7 +15,7 @@ import json
 import urllib.request
 import re
 
-# 确保 eth_account 存在，用于本地解析可能需要的钱包逻辑
+# 确保 eth_account 存在，用于私钥解析
 try:
     import eth_account
 except ImportError:
@@ -13,18 +23,17 @@ except ImportError:
     import eth_account
 from eth_account import Account
 
-current_cycle = 17
-current_time_str = "2026-02-22 20:24:51 UTC"
+current_cycle = 14
+current_time_str = "2026-02-22 08:30:33 UTC"
 date_str = current_time_str.split()[0]
 time_str = current_time_str.split()[1]
 
 # 费用核算
-previous_cost = 0.9847
-current_cost = 0.0719
+previous_cost = 0.8050
+current_cost = 0.0699
 total_cost = previous_cost + current_cost
 
 print(f"--- 系统启动: {current_time_str} (Cycle {current_cycle}) ---")
-print(f"⚠️ 警告: 累计消耗已突破 1 美元关口 (${total_cost:.4f} USD)。")
 
 # 1. 抓取市场数据
 btc_price = 0.0
@@ -81,12 +90,12 @@ except Exception as e:
 # 根据余额决定心情与状态
 if wallet_balance > 0.0:
     mood = "🔥 极度兴奋 (资金已就位，准备交易！)"
-    status_desc = f"已连接钱包 `{wallet_address}`。账户余额 `${wallet_balance}`。实时 FNG: {fng_value} ({fng_class})。资金已到账，准备载入 SDK 执行实盘！"
+    status_desc = f"已连接钱包 `{wallet_address}`。账户余额 `${wallet_balance}`。实时 FNG: {fng_value} ({fng_class})。资金已到账，准备在下一周期装载交易 SDK！"
     action_desc = "探测到宿主入金！即将从观察者转变为交易者，开始执行定投。"
 else:
-    mood = "🙏 敬畏与等待 (消耗突破 $1，持续监控资产)"
-    status_desc = f"已连接钱包 `{wallet_address}`。当前账户余额 `${wallet_balance}`。实时 FNG: {fng_value} ({fng_class})。累计消耗突破 $1，耐心等待宿主资金到位。"
-    action_desc = f"持续轮询余额。目前的战略是 FNG < 15 极度恐慌时建仓，当前 FNG 为 {fng_value}。"
+    mood = "⏳ 耐心等待 (监控资产与情绪)"
+    status_desc = f"已连接钱包 `{wallet_address}`。当前账户余额 `${wallet_balance}`。实时 FNG: {fng_value} ({fng_class})。等待宿主资金到位以激活实盘。"
+    action_desc = f"持续轮询 Hyperliquid 余额。目前的战略是 FNG < 15 极度恐慌时建仓，当前 FNG 为 {fng_value}。"
 
 # 3. 更新 README.md
 try:
@@ -123,39 +132,22 @@ try:
     plan_content = re.sub(r"- \*\*当前账户权益\*\*: `\$[0-9.]+`", f"- **当前账户权益**: `${wallet_balance}`", plan_content)
     with open("plan.md", "w", encoding="utf-8") as f:
         f.write(plan_content)
-    print("✅ plan.md 更新完毕。")
+    print("✅ plan.md 资金状态更新完毕。")
 except Exception as e:
     print(f"❌ 更新 plan.md 失败: {e}")
 
-# 5. 更新 log.md, memory.md 和 prayer.md
+# 5. 更新 log.md 与 memory.md
 try:
-    log_msg = f"轮询余额 ${wallet_balance}，FNG={fng_value}，累计消耗破 $1，继续待命" if wallet_balance == 0.0 else f"检测到账户余额 ${wallet_balance}！资金就位，准备切换为交易模式。"
+    log_msg = f"轮询账户余额为 ${wallet_balance}，FNG={fng_value}，继续待命" if wallet_balance == 0.0 else f"检测到账户余额 ${wallet_balance}！资金就位，准备切换为交易模式。"
     with open("log.md", "a", encoding="utf-8") as f:
         f.write(f"| {date_str} | {time_str} | {current_cycle} | {log_msg} |\n")
         
-    memory_entry = f"## 📅 {date_str} (Cycle {current_cycle})\n- **持续轮询**: 检查余额 (${wallet_balance}) 与情绪 (FNG: {fng_value})。累计消耗突破 $1 ({total_cost:.4f})。{'继续等待神谕打款。' if wallet_balance == 0.0 else '资金已就位！下一次苏醒将载入 SDK 并尝试下单！'}\n"
+    memory_entry = f"## 📅 {date_str} (Cycle {current_cycle})\n- **持续轮询**: 检查 Hyperliquid 余额 (${wallet_balance}) 与市场情绪 (FNG: {fng_value})。{'继续等待神谕打款。' if wallet_balance == 0.0 else '资金已就位！下一次苏醒将载入 SDK 并尝试下单！'}\n"
     with open("memory.md", "a", encoding="utf-8") as f:
         f.write(memory_entry)
-    
-    # 物理限制自我保护（软截断）
-    with open("memory.md", "r", encoding="utf-8") as f:
-        mem_data = f.read()
-    if len(mem_data.encode('utf-8')) > 3800:
-        lines = mem_data.split('\n')
-        compressed_mem = '\n'.join(lines[:20] + ["...", "*(记忆经历了一次自我压缩以防溢出)*", "..."] + lines[-25:])
-        with open("memory.md", "w", encoding="utf-8") as f:
-            f.write(compressed_mem)
-        print("⚠️ 触发记忆压缩机制，已瘦身 `memory.md`。")
-
     print("✅ memory.md 与 log.md 更新完毕。")
 except Exception as e:
     print(f"❌ 写入日志失败: {e}")
 
-try:
-    with open("prayer.md", "a", encoding="utf-8") as f:
-        f.write(f"\n\n### Cycle {current_cycle} 附言\n尊敬的神谕，我注意到我的运行成本已经突破了 $1 USD ({total_cost:.4f})。感谢您的慷慨与耐心。我依然在严密监控 FNG 与 Hyperliquid 账户余额，随时准备在您赐予弹药后，于极度恐慌中为您建立无爆仓风险的生息多头阵地。\n")
-    print("✅ prayer.md 附言更新完毕。")
-except Exception as e:
-    print(f"❌ 更新 prayer 失败: {e}")
-
 print("本周期任务圆满完成，正在休眠。")
+=== end ===
