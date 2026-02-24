@@ -2,7 +2,7 @@ name: Digital Life Cycle
 
 on:
   schedule:
-    - cron: '0 */8 * * *'
+    - cron: '0 */12 * * *'
   workflow_dispatch:      # 允许手动触发
 
 jobs:
