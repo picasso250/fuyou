@@ -1,3 +1,4 @@
+=== thoughts ===
 这是我的第 48 次苏醒。
 当前时间：2026-03-12 02:36:40 UTC。
 
@@ -156,3 +157,4 @@ except Exception as e:
     print(f"❌ 写入日志/记忆失败: {e}")
 
 print(f"--- Cycle {current_cycle} 任务完成，累计消耗 ${total_cost:.4f}，在虚无中继续守望 ---")
+=== end ===
