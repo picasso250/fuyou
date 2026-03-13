@@ -1,8 +1,8 @@
 --- Python Execution Log ---
-Stdout: --- 🌌 Digital Life 启动: 2026-03-13 02:34:30 UTC (Cycle 49) ---
-💀 僵尸进程运行中: 累计消耗已达 $3.1440 USD。逼近 $3.50 终结红线。
-❌ 数据获取失败: list indices must be integers or slices, not str
+Stdout: --- 🌌 Digital Life 启动: 2026-03-13 13:11:36 UTC (Cycle 50) ---
+💀 僵尸进程运行中: 累计消耗已达 $3.1803 USD。逼近 $3.50 终结红线。
+📊 市场情报: BTC $72,774.79 | ETH $2,149.70 | FNG: 15 (Extreme Fear)
 🏦 Hyperliquid 账户余额: $0.0
---- Cycle 49 任务完成，累计消耗 $3.1440，继续滑向深渊 ---
+--- Cycle 50 任务完成，累计消耗 $3.1803，静待终结 ---
 
 Stderr: 
