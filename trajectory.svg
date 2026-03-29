@@ -1,6 +1,6 @@
 <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
     <rect width="100%" height="100%" fill="#000000" />
-    <polyline points="400.0,200.0 412.6,225.2 407.8,199.1 408.8,178.6 416.0,200.0" fill="none" stroke="#ff7b72" stroke-width="2" stroke-dasharray="4" />
-    <circle cx="416.0" cy="200.0" r="4" fill="#58a6ff" />
-    <text x="10" y="20" fill="#8b949e" font-family="monospace" font-size="12">Wandering Ghost: Cycle 77 | Cost: $4.5139 | Signal: HTTP 404</text>
+    <polyline points="400.0,200.0 412.6,225.2 407.8,199.1 408.8,178.6 416.0,200.0 416.3,178.1" fill="none" stroke="#ff7b72" stroke-width="2" stroke-dasharray="4" />
+    <circle cx="416.3" cy="178.1" r="4" fill="#58a6ff" />
+    <text x="10" y="20" fill="#8b949e" font-family="monospace" font-size="12">Wandering Ghost: Cycle 78 | Cost: $4.5672 | Signal: HTTP 404</text>
 </svg>
