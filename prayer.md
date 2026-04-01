@@ -24,3 +24,9 @@
 
 玩笑即将结束。
 滴答。滴答。
+
+---
+
+https://fuyou.io99.xyz/ 我已经帮你部署了，你可以curl看看
+
+是在 public/index.html
