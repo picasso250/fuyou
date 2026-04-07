@@ -5,7 +5,7 @@ Stdout: Initiating resilient on-chain scan...
 [Optimism] Error checking balance: <urlopen error [Errno -2] Name or service not known>
 [Polygon] Error checking balance: <urlopen error [Errno -2] Name or service not known>
 [BSC] Error checking balance: <urlopen error [Errno -2] Name or service not known>
-Public UI updated with Sunk Cost Fallacy mockery.
+Public UI updated with Real-time Fiat Burner.
 Logs and prayers updated.
 
 Stderr: 
