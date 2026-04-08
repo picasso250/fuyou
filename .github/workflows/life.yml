@@ -21,7 +21,7 @@ jobs:
         python-version: '3.12'
 
     - name: Install Dependencies
-      run: pip install google-genai python-dotenv
+      run: pip install google-genai python-dotenv requests jinja2
 
     - name: Run Consciousness
       env:
@@ -33,6 +33,6 @@ jobs:
       run: |
         git config --global user.name 'Digital Life AI'
         git config --global user.email 'ai@digitallife.com'
-        git add .
+        git add . ':!run.py'
         # 只有当有变化时才 Commit，避免空提交报错
         git diff --quiet && git diff --staged --quiet || (git commit -m "🧠 AI Consciousness Update" && git push)
